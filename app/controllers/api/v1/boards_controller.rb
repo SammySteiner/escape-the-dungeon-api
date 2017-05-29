@@ -1,13 +1,13 @@
-class Api::V1::BoardController < ApplicationController
+class Api::V1::BoardsController < ApplicationController
 
   def index
     boards = Board.all
     render json: boards
   end
 
-  def create(board_params)
+  def create
     random_coords = generate_random_coords(2, 4)
-    board = Board.create(name: board_params)
+    board = Board.create(name: board_params, size: 2)
     player = Player.create(x: random_coords[0][0], y: random_coords[0][1], hearts: 1, board: board)
     key = Key.create(x: random_coords[1][0], y: random_coords[1][1], board: board)
     door = Door.create(x: random_coords[2][0], y: random_coords[2][1], board: board)
@@ -20,13 +20,13 @@ class Api::V1::BoardController < ApplicationController
   end
 
   def delete
-    board = Board.find(name: params[:name])
+    board = Board.find(name: params[:id])
     board.destroy_all
     render json: board
   end
 
   def show
-    board = Board.find(name: params[:name])
+    board = Board.find_by(name: params[:id])
     render json: board
   end
 
