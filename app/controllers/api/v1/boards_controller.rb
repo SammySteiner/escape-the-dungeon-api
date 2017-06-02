@@ -16,11 +16,16 @@ class Api::V1::BoardsController < ApplicationController
   end
 
   def update
-    binding.pry
+    board = Board.find_by(name: params[:id])
+    board.player.update({x: params[:board][:player][:x], y: params[:board][:player][:y], key: params[:board][:player][:key], hearts: params[:board][:player][:hearts]})
+    params[:board][:monsters].each_with_index do |monster, i|
+      board.monsters[i].update( x: monster[:x], y: monster[:y] )
+    end
+    render json: board
   end
 
   def delete
-    board = Board.find(name: params[:id])
+    board = Board.find_by(name: params[:id])
     board.destroy_all
     render json: board
   end
@@ -33,7 +38,7 @@ class Api::V1::BoardsController < ApplicationController
   private
 
   def board_params
-    params.require(:board).permit(:name, :size)
+    params.require(:board).permit(:name, :size, :board)
   end
 
   def generate_random_coords(grid_size, number_of_coords)
